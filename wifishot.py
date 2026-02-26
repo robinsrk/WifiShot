@@ -1872,8 +1872,8 @@ if __name__ == "__main__":
         wmtWifi_device.chmod(0o644)
         wmtWifi_device.write_text("1")
 
-    if not ifaceUp(args.interface):
-        die(f'Unable to up interface "{args.interface}"')
+    if not args.interface:
+        die('Please specify an interface with "-i"')
 
     while True:
         try:
@@ -1930,7 +1930,8 @@ if __name__ == "__main__":
                 break
 
     if args.iface_down:
-        ifaceUp(args.interface, down=True)
+        # ifaceUp(args.interface, down=True)
+        pass
 
     if args.mtk_wifi:
         wmtWifi_device.write_text("0")
