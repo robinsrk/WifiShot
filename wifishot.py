@@ -1774,29 +1774,6 @@ def ifaceUp(iface, down=False):
     return subprocess.call(["ifconfig", iface, "up"], stderr=subprocess.DEVNULL)
 
 
-def is_interface_up(interface):
-    """Check if interface is up and running"""
-    try:
-        # Use subprocess.check_output to get the output of the ifconfig command
-        output = subprocess.check_output(["ifconfig", interface], stderr=subprocess.STDOUT).decode()
-        # Check if 'UP' and 'RUNNING' are in the output string
-        return "UP" in output and "RUNNING" in output
-    except subprocess.CalledProcessError:
-        # The command will fail if the interface doesn't exist
-        return False
-
-
-def wait_for_interface(interface):
-    """Wait for interface to be ready"""
-    console.print("[*] Waiting for interface to be ready...")
-    for i in range(10):
-        if is_interface_up(interface):
-            console.print("[+] Interface is ready.")
-            return
-        time.sleep(1)
-    die(f"Interface {interface} is not up after 10 seconds.")
-
-
 def die(msg):
     console = Console()
     console.print(f"[bold red]ERROR:[/bold red] {msg}")
@@ -1905,8 +1882,17 @@ if __name__ == "__main__":
     if not ifaceUp(args.interface):
         die(f'Unable to up interface "{args.interface}"')
 
-    # Wait for interface to be ready
-    wait_for_interface(args.interface)
+    i = 0
+    while i < 5:
+        try:
+            if "UP" in subprocess.check_output(["ifconfig", args.interface]).decode():
+                break
+        except Exception:
+            pass
+        time.sleep(1)
+        i += 1
+    if i == 5:
+        die(f'Unable to up interface "{args.interface}"')
 
     while True:
         try:
