@@ -1774,6 +1774,18 @@ def ifaceUp(iface, down=False):
     return subprocess.call(["ifconfig", iface, "up"], stderr=subprocess.DEVNULL)
 
 
+def is_interface_up(interface):
+    """Check if interface is up and running"""
+    try:
+        # Use subprocess.check_output to get the output of the ifconfig command
+        output = subprocess.check_output(["ifconfig", interface], stderr=subprocess.STDOUT).decode()
+        # Check if 'UP' and 'RUNNING' are in the output string
+        return "UP" in output and "RUNNING" in output
+    except subprocess.CalledProcessError:
+        # The command will fail if the interface doesn't exist
+        return False
+
+
 def die(msg):
     console = Console()
     console.print(f"[bold red]ERROR:[/bold red] {msg}")
