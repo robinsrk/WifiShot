@@ -1009,6 +1009,7 @@ class Companion:
     """Main application part"""
 
     def __init__(self, interface, save_result=False, print_debug=False, bssid=""):
+        self.console = Console()
         self.interface = interface
         self.save_result = save_result
         self.print_debug = print_debug
