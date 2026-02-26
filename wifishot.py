@@ -1882,6 +1882,8 @@ if __name__ == "__main__":
     if not ifaceUp(args.interface):
         die(f'Unable to up interface "{args.interface}"')
 
+    time.sleep(2)
+
     while True:
         try:
             companion = Companion(args.interface, args.write, print_debug=args.verbose)
