@@ -1786,6 +1786,17 @@ def is_interface_up(interface):
         return False
 
 
+def wait_for_interface(interface):
+    """Wait for interface to be ready"""
+    console.print("[*] Waiting for interface to be ready...")
+    for i in range(10):
+        if is_interface_up(interface):
+            console.print("[+] Interface is ready.")
+            return
+        time.sleep(1)
+    die(f"Interface {interface} is not up after 10 seconds.")
+
+
 def die(msg):
     console = Console()
     console.print(f"[bold red]ERROR:[/bold red] {msg}")
@@ -1894,7 +1905,8 @@ if __name__ == "__main__":
     if not ifaceUp(args.interface):
         die(f'Unable to up interface "{args.interface}"')
 
-    time.sleep(2)
+    # Wait for interface to be ready
+    wait_for_interface(args.interface)
 
     while True:
         try:
