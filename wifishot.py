@@ -1768,6 +1768,12 @@ class WiFiScanner:
             except Exception:
                 self.console.print("Invalid number")
 
+def ifaceUp(iface, down=False):
+    if down:
+        return subprocess.call(["ifconfig", iface, "down"], stderr=subprocess.DEVNULL)
+    return subprocess.call(["ifconfig", iface, "up"], stderr=subprocess.DEVNULL)
+
+
 def die(msg):
     console = Console()
     console.print(f"[bold red]ERROR:[/bold red] {msg}")
@@ -1873,8 +1879,8 @@ if __name__ == "__main__":
         wmtWifi_device.chmod(0o644)
         wmtWifi_device.write_text("1")
 
-    if not args.interface:
-        die('Please specify an interface with "-i"')
+    if not ifaceUp(args.interface):
+        die(f'Unable to up interface "{args.interface}"')
 
     while True:
         try:
@@ -1931,8 +1937,7 @@ if __name__ == "__main__":
                 break
 
     if args.iface_down:
-        # ifaceUp(args.interface, down=True)
-        pass
+        ifaceUp(args.interface, down=True)
 
     if args.mtk_wifi:
         wmtWifi_device.write_text("0")
